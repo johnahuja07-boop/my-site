@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momentous — Brand Scaling Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #F15A22;
+    --gray: #1a1a1a;
+    --border: rgba(245,242,236,0.1);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+  .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s; }
+  .cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(241,90,34,0.5); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; border-bottom: 1px solid transparent; transition: border-color 0.4s, background 0.4s; }
+  nav.scrolled { background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-color: var(--border); }
+  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .nav-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: var(--white); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a { color: rgba(245,242,236,0.6); text-decoration: none; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta { background: var(--accent) !important; color: var(--white) !important; padding: 10px 22px; border-radius: 2px; }
+
+  /* Hero */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 60px 80px; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 70% 40%, rgba(241,90,34,0.1) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 20% 80%, rgba(241,90,34,0.05) 0%, transparent 55%); }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,242,236,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,242,236,0.03) 1px, transparent 1px); background-size: 80px 80px; }
+  .hero-number { font-family: 'Syne', sans-serif; font-size: clamp(160px, 22vw, 320px); font-weight: 800; line-height: 0.85; color: transparent; -webkit-text-stroke: 1px rgba(245,242,236,0.05); position: absolute; right: -20px; bottom: 40px; pointer-events: none; user-select: none; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 32px; }
+  .hero-tag::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(52px, 8vw, 110px); font-weight: 800; line-height: 0.92; letter-spacing: -0.03em; max-width: 900px; position: relative; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero-sub { margin-top: 36px; font-size: 17px; line-height: 1.7; color: rgba(245,242,236,0.55); max-width: 480px; position: relative; }
+  .hero-actions { display: flex; align-items: center; gap: 28px; margin-top: 48px; position: relative; }
+  .btn-primary { background: var(--accent); color: var(--white); padding: 16px 36px; font-family: 'DM Sans', sans-serif; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; border: none; cursor: none; text-decoration: none; border-radius: 2px; transition: background 0.2s, transform 0.2s; display: inline-block; }
+  .btn-primary:hover { background: #d44d1a; transform: translateY(-2px); }
+  .btn-ghost { color: rgba(245,242,236,0.6); font-size: 14px; text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .btn-ghost:hover { color: var(--white); }
+  .btn-ghost::after { content: '→'; }
+  .hero-stats { position: absolute; right: 60px; bottom: 80px; display: flex; flex-direction: column; gap: 24px; text-align: right; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 700; color: var(--white); line-height: 1; }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,242,236,0.4); margin-top: 4px; }
+
+  /* Marquee */
+  .marquee-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; padding: 18px 0; background: var(--gray); }
+  .marquee { display: flex; animation: marquee 18s linear infinite; white-space: nowrap; }
+  .marquee-item { display: flex; align-items: center; gap: 32px; padding: 0 32px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,242,236,0.35); }
+  .marquee-item .dot { color: var(--accent); font-size: 20px; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* Sections */
+  section { padding: 120px 60px; }
+  .section-label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+  .services-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 72px; border-bottom: 1px solid var(--border); padding-bottom: 40px; }
+  .services-header h2 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 5vw, 64px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; max-width: 500px; }
+  .services-header p { max-width: 340px; color: rgba(245,242,236,0.5); font-size: 15px; line-height: 1.7; text-align: right; }
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .service-card { background: var(--black); padding: 48px 40px; transition: background 0.3s; position: relative; overflow: hidden; }
+  .service-card::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform 0.3s; transform-origin: left; }
+  .service-card:hover { background: var(--gray); }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-num { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.12em; margin-bottom: 32px; display: block; }
+  .service-card h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; }
+  .service-card p { color: rgba(245,242,236,0.5); font-size: 14px; line-height: 1.75; }
+  .service-arrow { position: absolute; bottom: 40px; right: 40px; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(245,242,236,0.3); font-size: 16px; transition: border-color 0.3s, color 0.3s, transform 0.3s; }
+  .service-card:hover .service-arrow { border-color: var(--accent); color: var(--accent); transform: translate(3px, -3px); }
+
+  /* Process */
+  .process { background: var(--gray); }
+  .process-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 80px; }
+  .process-header h2 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 5vw, 64px); font-weight: 800; letter-spacing: -0.03em; }
+  .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); border-left: 1px solid var(--border); }
+  .step { padding: 48px 40px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; }
+  .step-num { font-family: 'Syne', sans-serif; font-size: 72px; font-weight: 800; color: transparent; -webkit-text-stroke: 1px rgba(245,242,236,0.1); line-height: 1; margin-bottom: 24px; }
+  .step h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+  .step p { color: rgba(245,242,236,0.5); font-size: 13px; line-height: 1.75; }
+  .step-accent { position: absolute; top: 48px; right: 40px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+
+  /* Testimonials */
+  .testimonials-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px; }
+  .testimonials-header h2 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 5vw, 64px); font-weight: 800; letter-spacing: -0.03em; }
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .testi-card { border: 1px solid var(--border); padding: 40px; border-radius: 2px; transition: border-color 0.3s; }
+  .testi-card:hover { border-color: rgba(241,90,34,0.3); }
+  .testi-quote { font-size: 48px; color: var(--accent); line-height: 1; font-family: 'Syne', sans-serif; margin-bottom: 20px; }
+  .testi-text { font-size: 15px; line-height: 1.75; color: rgba(245,242,236,0.7); margin-bottom: 32px; }
+  .testi-author { display: flex; align-items: center; gap: 14px; }
+  .testi-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--gray); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--accent); border: 1px solid rgba(241,90,34,0.3); }
+  .testi-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+  .testi-role { font-size: 12px; color: rgba(245,242,236,0.4); margin-top: 2px; }
+
+  /* CTA */
+  .cta-section { background: var(--accent); padding: 120px 60px; position: relative; overflow: hidden; }
+  .cta-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px); background-size: 60px 60px; }
+  .cta-inner { position: relative; display: flex; justify-content: space-between; align-items: center; }
+  .cta-section h2 { font-family: 'Syne', sans-serif; font-size: clamp(40px, 6vw, 80px); font-weight: 800; letter-spacing: -0.03em; color: var(--black); line-height: 1; max-width: 600px; }
+  .cta-right { display: flex; flex-direction: column; align-items: flex-end; gap: 20px; }
+  .cta-right p { color: rgba(10,10,10,0.6); font-size: 15px; max-width: 280px; text-align: right; }
+  .btn-dark { background: var(--black); color: var(--white); padding: 18px 40px; font-family: 'DM Sans', sans-serif; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; border: none; cursor: none; text-decoration: none; border-radius: 2px; transition: transform 0.2s; display: inline-block; }
+  .btn-dark:hover { transform: translateY(-2px); }
+
+  /* Contact */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
+  .contact-left h2 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 4vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 24px; }
+  .contact-left p { color: rgba(245,242,236,0.5); font-size: 15px; line-height: 1.75; margin-bottom: 48px; }
+  .contact-info { display: flex; flex-direction: column; gap: 16px; }
+  .contact-info-item { display: flex; align-items: center; gap: 14px; font-size: 14px; color: rgba(245,242,236,0.6); }
+  .contact-info-item .icon { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .contact-form { display: flex; flex-direction: column; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,242,236,0.4); }
+  .form-group input, .form-group textarea, .form-group select { background: var(--gray); border: 1px solid var(--border); color: var(--white); padding: 14px 18px; font-family: 'DM Sans', sans-serif; font-size: 14px; border-radius: 2px; outline: none; transition: border-color 0.2s; appearance: none; cursor: none; }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 120px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .submit-btn { background: var(--accent); color: var(--white); border: none; padding: 16px 36px; font-family: 'DM Sans', sans-serif; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 2px; cursor: none; transition: background 0.2s, transform 0.2s; align-self: flex-start; }
+  .submit-btn:hover { background: #d44d1a; transform: translateY(-2px); }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .footer-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--white); }
+  .footer-copy { font-size: 12px; color: rgba(245,242,236,0.3); }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { font-size: 12px; color: rgba(245,242,236,0.3); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; } .nav-links { display: none; } section { padding: 80px 24px; } .hero { padding: 0 24px 60px; } .hero-stats { display: none; } .services-grid { grid-template-columns: 1fr; } .process-steps { grid-template-columns: 1fr 1fr; } .testi-grid { grid-template-columns: 1fr; } .contact-grid { grid-template-columns: 1fr; gap: 48px; } .services-header, .process-header { flex-direction: column; gap: 20px; align-items: flex-start; } .services-header p { text-align: left; } .cta-inner { flex-direction: column; gap: 40px; align-items: flex-start; } .cta-right { align-items: flex-start; } footer { flex-direction: column; gap: 20px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV with SVG logo -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="72" height="72" rx="10" fill="#F15A22"/>
+      <path d="M15 54 L15 20 L36 42 L57 20 L57 54" fill="none" stroke="#0a0a0a" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="nav-logo-text">MOMENTOUS</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#contact" class="nav-cta">Work With Us</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-number">M</div>
+  <div class="hero-tag">Brand Scaling Agency</div>
+  <h1>We build brands<br>that <em>dominate</em><br>their space.</h1>
+  <p class="hero-sub">A team of ambitious creatives turning ideas into recognized, revenue-generating brands — fast.</p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Start scaling →</a>
+    <a href="#process" class="btn-ghost">See how we work</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">40<span>+</span></div><div class="stat-label">Brands scaled</div></div>
+    <div class="stat-item"><div class="stat-num">3<span>×</span></div><div class="stat-label">Avg. growth</div></div>
+    <div class="stat-item"><div class="stat-num">12<span>mo</span></div><div class="stat-label">To results</div></div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <div class="marquee-item">Brand Identity <span class="dot">·</span></div>
+    <div class="marquee-item">Content Strategy <span class="dot">·</span></div>
+    <div class="marquee-item">Paid Advertising <span class="dot">·</span></div>
+    <div class="marquee-item">Influencer Seeding <span class="dot">·</span></div>
+    <div class="marquee-item">Community Growth <span class="dot">·</span></div>
+    <div class="marquee-item">Visual Design <span class="dot">·</span></div>
+    <div class="marquee-item">Brand Positioning <span class="dot">·</span></div>
+    <div class="marquee-item">Scale Systems <span class="dot">·</span></div>
+    <div class="marquee-item">Brand Identity <span class="dot">·</span></div>
+    <div class="marquee-item">Content Strategy <span class="dot">·</span></div>
+    <div class="marquee-item">Paid Advertising <span class="dot">·</span></div>
+    <div class="marquee-item">Influencer Seeding <span class="dot">·</span></div>
+    <div class="marquee-item">Community Growth <span class="dot">·</span></div>
+    <div class="marquee-item">Visual Design <span class="dot">·</span></div>
+    <div class="marquee-item">Brand Positioning <span class="dot">·</span></div>
+    <div class="marquee-item">Scale Systems <span class="dot">·</span></div>
+  </div>
+</div>
+
+<!-- Services -->
+<section id="services">
+  <div class="section-label">What we do</div>
+  <div class="services-header fade-up">
+    <h2>Our core<br>services</h2>
+    <p>Every service is built to move fast and produce measurable results within your first 90 days.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card fade-up"><span class="service-num">01</span><h3>Brand Identity & Positioning</h3><p>We craft your visual identity, brand story, and market position so you stand out and stay remembered in a noisy world.</p><div class="service-arrow">↗</div></div>
+    <div class="service-card fade-up"><span class="service-num">02</span><h3>Content & Social Strategy</h3><p>Daily content systems built to grow your audience organically. We handle creative direction, scripting, and distribution.</p><div class="service-arrow">↗</div></div>
+    <div class="service-card fade-up"><span class="service-num">03</span><h3>Paid Media & Performance</h3><p>Meta, TikTok, and Google ads engineered for ROI. We handle creative, testing, and scaling your best performers.</p><div class="service-arrow">↗</div></div>
+    <div class="service-card fade-up"><span class="service-num">04</span><h3>Influencer & Creator Seeding</h3><p>We connect your brand with the right voices — from micro-creators to major influencers — to drive authentic reach.</p><div class="service-arrow">↗</div></div>
+    <div class="service-card fade-up"><span class="service-num">05</span><h3>Community Building</h3><p>Turn followers into superfans. We build community frameworks that create loyal audiences who advocate for your brand.</p><div class="service-arrow">↗</div></div>
+    <div class="service-card fade-up"><span class="service-num">06</span><h3>Brand Scaling Systems</h3><p>SOPs, workflows, and playbooks that let your brand grow without breaking. We build the infrastructure for scale.</p><div class="service-arrow">↗</div></div>
+  </div>
+</section>
+
+<!-- Process -->
+<section id="process" class="process">
+  <div class="section-label">How we work</div>
+  <div class="process-header fade-up"><h2>Our process</h2></div>
+  <div class="process-steps">
+    <div class="step fade-up"><div class="step-num">01</div><div class="step-accent"></div><h3>Discovery</h3><p>We dig deep into your brand, market, audience, and competitors. No assumptions — pure research.</p></div>
+    <div class="step fade-up"><div class="step-num">02</div><div class="step-accent"></div><h3>Strategy</h3><p>We build a custom scaling blueprint with clear milestones, channels, and KPIs tailored to your goals.</p></div>
+    <div class="step fade-up"><div class="step-num">03</div><div class="step-accent"></div><h3>Execution</h3><p>Our team moves fast. Content, ads, and campaigns go live within weeks — not months.</p></div>
+    <div class="step fade-up"><div class="step-num">04</div><div class="step-accent"></div><h3>Optimise & Scale</h3><p>We track every metric, kill what doesn't work, and double down hard on what does.</p></div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section id="results">
+  <div class="section-label">Social proof</div>
+  <div class="testimonials-header fade-up"><h2>What clients say</h2></div>
+  <div class="testi-grid">
+    <div class="testi-card fade-up"><div class="testi-quote">"</div><p class="testi-text">Momentous took our streetwear brand from zero presence to 80k followers and consistent monthly revenue in under 8 months. These guys are the real deal.</p><div class="testi-author"><div class="testi-avatar">JM</div><div><div class="testi-name">Jordan Mitchell</div><div class="testi-role">Founder, Vaulted Co.</div></div></div></div>
+    <div class="testi-card fade-up"><div class="testi-quote">"</div><p class="testi-text">Their content strategy completely changed how we communicate our brand. Our engagement tripled within 60 days. Worth every penny.</p><div class="testi-author"><div class="testi-avatar">SK</div><div><div class="testi-name">Sofia Kamara</div><div class="testi-role">CEO, Luma Wellness</div></div></div></div>
+    <div class="testi-card fade-up"><div class="testi-quote">"</div><p class="testi-text">The team is young, hungry, and sharp. They understand digital culture in a way most legacy agencies just don't. Loved working with them.</p><div class="testi-author"><div class="testi-avatar">TR</div><div><div class="testi-name">Tyler Reeves</div><div class="testi-role">CMO, NovaSport</div></div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-inner">
+    <h2>Ready to make your brand momentous?</h2>
+    <div class="cta-right">
+      <p>Book a free strategy call and we'll show you exactly what's possible in 90 days.</p>
+      <a href="#contact" class="btn-dark">Book a free call →</a>
+    </div>
+  </div>
+</div>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="section-label">Get in touch</div>
+  <div class="contact-grid">
+    <div class="contact-left fade-up">
+      <h2>Let's build something momentous.</h2>
+      <p>Tell us about your brand and where you want to take it. We'll get back to you within 24 hours with a plan.</p>
+      <div class="contact-info">
+        <div class="contact-info-item"><div class="icon">✉</div>hello@momentous.agency</div>
+        <div class="contact-info-item"><div class="icon">📍</div>New York · Remote Worldwide</div>
+        <div class="contact-info-item"><div class="icon">⚡</div>Response within 24 hours</div>
+      </div>
+    </div>
+    <div class="contact-right fade-up">
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group"><label>Your Name</label><input type="text" placeholder="Jordan Smith" required></div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@brand.com" required></div>
+        </div>
+        <div class="form-group"><label>Brand / Company</label><input type="text" placeholder="Your brand name"></div>
+        <div class="form-group"><label>What do you need?</label>
+          <select>
+            <option value="">Select a service...</option>
+            <option>Brand Identity & Positioning</option>
+            <option>Content & Social Strategy</option>
+            <option>Paid Media & Performance</option>
+            <option>Influencer Seeding</option>
+            <option>Full Brand Scaling Package</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Tell us about your goals</label><textarea placeholder="Where is your brand right now and where do you want it in 12 months?"></textarea></div>
+        <button type="submit" class="submit-btn">Send message →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Footer with SVG logo -->
+<footer>
+  <a href="#" class="footer-logo">
+    <svg width="30" height="30" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="72" height="72" rx="10" fill="#F15A22"/>
+      <path d="M15 54 L15 20 L36 42 L57 20 L57 54" fill="none" stroke="#0a0a0a" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="footer-logo-text">MOMENTOUS</span>
+  </a>
+  <div class="footer-copy">© 2026 Momentous Agency. All rights reserved.</div>
+  <div class="footer-links"><a href="#">Instagram</a><a href="#">LinkedIn</a><a href="#">TikTok</a></div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    rx += (e.clientX - rx) * 0.12;
+    ry += (e.clientY - ry) * 0.12;
+  });
+  (function animRing() { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); })();
+  window.addEventListener('scroll', () => { document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60); });
+  const observer = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), 100); }); }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  document.querySelectorAll('.services-grid .service-card, .testi-grid .testi-card, .process-steps .step').forEach((el, i) => { el.style.transitionDelay = (i * 0.08) + 's'; });
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.submit-btn');
+    btn.textContent = 'Message sent ✓';
+    btn.style.background = '#1a7a4a';
+    setTimeout(() => { btn.textContent = 'Send message →'; btn.style.background = ''; e.target.reset(); }, 3000);
+  }
+</script>
+</body>
+</html>
